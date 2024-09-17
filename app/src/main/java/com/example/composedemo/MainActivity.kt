@@ -45,9 +45,13 @@ class MainActivity : ComponentActivity() {
 fun MyApp(modifier: Modifier = Modifier,
           names: List<String> = listOf("World", "Compose")
 ) {
-    Column(modifier = modifier.padding(vertical = 4.dp)) {
-        for (name in names) {
-            Greeting(name = name)
+    var shouldShowOnboarding by remember { mutableStateOf(true) }
+
+    Surface(modifier) {
+        if (shouldShowOnboarding) {
+            OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false })
+        } else {
+            Greetings()
         }
     }
 }
@@ -82,9 +86,9 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     }
 }
 @Composable
-fun OnboardingScreen(modifier: Modifier = Modifier) {
+fun OnboardingScreen(onContinueClicked: () -> Unit,
+                     modifier: Modifier = Modifier) {
     // TODO: This state should be hoisted
-    var shouldShowOnboarding by remember { mutableStateOf(true) }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -94,25 +98,39 @@ fun OnboardingScreen(modifier: Modifier = Modifier) {
         Text("Welcome to the Basics Codelab!")
         Button(
             modifier = Modifier.padding(vertical = 24.dp),
-            onClick = { shouldShowOnboarding = false }
+            onClick = onContinueClicked
         ) {
             Text("Continue")
         }
     }
 }
 
-@Preview(showBackground = true, widthDp = 320, heightDp = 320)
 @Composable
-fun OnboardingPreview() {
-    ComposeDemoTheme {
-        OnboardingScreen()
+private fun Greetings(
+    modifier: Modifier = Modifier,
+    names: List<String> = listOf("World", "Compose")
+) {
+    Column(modifier = modifier.padding(vertical = 4.dp)) {
+        for (name in names) {
+            Greeting(name = name)
+        }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 320)
 @Composable
-fun GreetingPreview() {
+fun GreetingsPreview() {
     ComposeDemoTheme {
-        MyApp()
+        Greetings()
+    }
+}
+
+
+
+@Preview
+@Composable
+fun MyAppPreview() {
+    ComposeDemoTheme {
+        MyApp(Modifier.fillMaxSize())
     }
 }
